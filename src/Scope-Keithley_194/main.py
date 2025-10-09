@@ -248,10 +248,10 @@ class Device(EmptyDevice):
     def read_result(self):
         # retrieving the raw data over the GPIB bus
         rawdata = self.port.port.read_raw()
-        # get only the first byte from the buffer to analyse header information; header is always unsigned integer 'u1'
-        bitmodecheck = np.frombuffer(rawdata,dtype='u1',offset=0, count=1)
-        # unpack bit number 6 which indicates 8-bit (=0) or 16-bit (=1) values
-        bitmodecheckflag = np.unpackbits(bitmodecheck)[6]
+        # get only the third byte from the buffer to analyse header information; header is always unsigned integer 'u1'
+        bitmodecheck = np.frombuffer(rawdata,dtype='u1',offset=2, count=1)
+        # unpack bit number 5 (counted from 0) which indicates 8-bit (=0) or 16-bit (=1) values
+        bitmodecheckflag = np.unpackbits(bitmodecheck)[5]
 
         # the choice between 8-bit (= 1 Byte) and 16-bit (= 2 Byte) sampling values is made by the instrument depending on
         # a) sampling rate being above 100kHz (forces 8-bit instead of 16-bit)
