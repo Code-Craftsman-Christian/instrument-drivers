@@ -84,6 +84,7 @@ class Device(EmptyDevice):
             # NPLCs included to transparently allow for user based measurement time estimations
             "Speed": list(self.speed_types.keys()),
             "Compliance": 100e-6,
+            "Low Terminal: ": ["Ground", "Floating"],
             "CheckPulse": False,
             "PulseOnTime": 1e-3,  # for use on the B2902B, defined as the pulse width time
             "PulseDelay": 0,  # for use on the B2902B, defined as the delay time prior to pulse
@@ -100,6 +101,7 @@ class Device(EmptyDevice):
         self.source = parameter['SweepMode']
         self.protection = parameter['Compliance']
         self.speed = parameter['Speed']
+        self.lowterminal = parameter['Low Terminal: ']
 
         # not yet supported
         # self.average = int(parameter['Average'])
@@ -265,7 +267,10 @@ class Device(EmptyDevice):
         else:
             self.port.write(":FUNC DC")  # std DC output
 
-        self.port.write(":OUTP%s:LOW GRO" % self.channel)  # FLOating or GROunded GND terminal
+        if self.lowterminal == "Ground":
+            self.port.write(":OUTP%s:LOW GRO" % self.channel)  # GROunded GND terminal
+        else:
+            self.port.write(":OUTP%s:LOW FLO" % self.channel)  # FLOating GND terminal
 
     def deinitialize(self):
         if self.four_wire:
